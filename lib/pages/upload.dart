@@ -37,6 +37,7 @@ class _UploadState extends State<Upload> {
   String? mediaUrl;
   File? file;
   String postId = Uuid().v4();
+
   handleTakePhoto()async {
     Navigator.pop(context);
     PickedFile? pickedfile = await ImagePicker.platform.pickImage(source: ImageSource.camera, maxHeight: 680, maxWidth: 900);
@@ -118,6 +119,7 @@ class _UploadState extends State<Upload> {
   }
 
   compressImage()async{
+    print("compressing image running")
     final tempDir = await getTemporaryDirectory(); 
     final path = tempDir.path;
     Ima.Image? imageFile = Ima.decodeImage(file!.readAsBytesSync());
@@ -125,6 +127,8 @@ class _UploadState extends State<Upload> {
     setState(() {
       file = compressedImage;
     });
+
+    print("file: ${file}");
    }
 
   Future<String?> uploadImage(File? file) async{
@@ -132,6 +136,7 @@ class _UploadState extends State<Upload> {
     firebase_storage.UploadTask uploadTask =  storageRef.child("post_$postId.jpg").putFile(file!);
     
     firebase_storage.TaskSnapshot storageSnap =  await uploadTask.whenComplete(() async{
+    print("rinning upload when complete bracket");
     print(uploadTask.snapshot);
     mediaUrl  =  await uploadTask.snapshot.ref.getDownloadURL();
     print('---------------------------------------');
